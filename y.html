@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indonesia News Ultimate | by Aditiya 🔥</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=Plus+Jakarta+Sans:wght@400;700&display=swap');
+
+        :root {
+            --primary: #ff2e63;
+            --secondary: #08d9d6;
+            --dark: #0a0b10;
+            --glass: rgba(255, 255, 255, 0.03);
+            --card-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
+        
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--dark);
+            color: #fff;
+            background-image: radial-gradient(circle at 50% 50%, #1a1b25 0%, #0a0b10 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* NAVIGATION BAR */
+        nav {
+            position: sticky; top: 0; z-index: 1000;
+            background: rgba(10, 11, 16, 0.7);
+            backdrop-filter: blur(20px);
+            padding: 15px 5%;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .brand { display: flex; flex-direction: column; }
+        .brand h1 { font-family: 'Space Grotesk', sans-serif; font-size: 1.4rem; letter-spacing: -1px; }
+        .brand span { color: var(--primary); text-shadow: 0 0 20px rgba(255, 46, 99, 0.6); }
+        .live-clock { font-family: monospace; color: var(--secondary); font-size: 0.8rem; margin-top: 2px; }
+
+        /* MULTI-SOURCE SELECTOR (Titik Tiga Modern) */
+        .action-area { display: flex; align-items: center; gap: 20px; }
+        .menu-dots {
+            background: var(--glass); border: 1px solid var(--card-border);
+            color: white; width: 45px; height: 45px; border-radius: 12px;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; transition: 0.3s;
+        }
+        .menu-dots:hover { background: var(--primary); border-color: var(--primary); }
+
+        .dropdown-panel {
+            position: absolute; top: 75px; right: 5%;
+            background: #15161c; border: 1px solid var(--card-border);
+            border-radius: 15px; width: 220px; display: none;
+            padding: 10px; box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            animation: zoomIn 0.2s ease;
+        }
+        @keyframes zoomIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .dropdown-panel button {
+            width: 100%; text-align: left; padding: 12px; background: none;
+            border: none; color: white; cursor: pointer; border-radius: 8px;
+            font-family: inherit; margin-bottom: 5px; transition: 0.2s;
+        }
+        .dropdown-panel button:hover { background: rgba(255,255,255,0.05); color: var(--secondary); }
+
+        /* BENTO GRID MAIN AREA */
+        .main-content { max-width: 1300px; margin: 40px auto; padding: 0 5%; }
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .bento-card {
+            background: var(--glass);
+            border: 1px solid var(--card-border);
+            border-radius: 28px;
+            overflow: hidden;
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        .bento-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            background: rgba(255,255,255,0.06);
+            border-color: var(--secondary);
+        }
+
+        .img-wrapper { width: 100%; height: 230px; overflow: hidden; position: relative; }
+        .img-wrapper img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
+        .bento-card:hover .img-wrapper img { transform: scale(1.1); }
+        
+        .source-tag {
+            position: absolute; top: 15px; left: 15px;
+            padding: 5px 12px; border-radius: 8px; font-size: 0.65rem;
+            font-weight: 800; text-transform: uppercase; letter-spacing: 1px;
+            background: var(--primary); color: white;
+        }
+
+        .card-body { padding: 25px; }
+        .card-body h3 { font-size: 1.15rem; line-height: 1.4; margin-bottom: 15px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        .card-meta { display: flex; justify-content: space-between; align-items: center; color: #666; font-size: 0.75rem; }
+
+        /* FULL STORY MODAL */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(5, 6, 10, 0.95); z-index: 2000;
+            display: none; justify-content: center; align-items: center;
+            backdrop-filter: blur(15px);
+        }
+        .modal-content {
+            width: 90%; max-width: 900px; height: 85vh;
+            background: #111218; border-radius: 30px;
+            border: 1px solid var(--card-border); padding: 40px;
+            overflow-y: auto; position: relative;
+        }
+        .close-modal {
+            position: sticky; top: 0; float: right; background: var(--primary);
+            color: white; border: none; padding: 10px 20px; border-radius: 12px; cursor: pointer;
+        }
+
+        /* WHATSAPP FLOAT */
+        .wa-btn {
+            position: fixed; bottom: 30px; right: 30px;
+            background: #25d366; color: white; width: 60px; height: 60px;
+            border-radius: 20px; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 10px 30px rgba(37, 211, 102, 0.4); text-decoration: none;
+            font-size: 1.6rem; z-index: 999; transition: 0.3s;
+        }
+        .wa-btn:hover { transform: rotate(10deg) scale(1.1); }
+
+        /* SHIMMER LOADING */
+        .shimmer { text-align: center; padding: 50px; color: var(--secondary); font-weight: bold; }
+
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="brand">
+            <h1>Indonesia<span>News.</span></h1>
+            <div id="liveTime" class="live-clock">00:00:00 WIB</div>
+        </div>
+        <div class="action-area">
+            <button class="menu-dots" onclick="toggleMenu()">⋮</button>
+            <div id="dropMenu" class="dropdown-panel">
+                <button onclick="switchFeed('utama')">🚀 Berita Campuran</button>
+                <button onclick="switchFeed('bisnis')">💰 Bisnis & Finansial</button>
+                <button onclick="switchFeed('tekno')">💻 Teknologi</button>
+                <hr style="border:0; border-top:1px solid #333; margin: 10px 0;">
+                <button onclick="showAuthor()">👤 Owner: Aditiya</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-content">
+        <div id="loading" class="shimmer">MENSINKRONISASI SUMBER BERITA...</div>
+        <div id="newsContainer" class="news-grid"></div>
+    </div>
+
+    <!-- WhatsApp Owner -->
+    <a href="https://wa.me/6281234567890" class="wa-btn" target="_blank">📲</a>
+
+    <!-- Modal Selengkapnya -->
+    <div id="modalOverlay" class="modal-overlay">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal()">TUTUP</button>
+            <div id="modalData"></div>
+        </div>
+    </div>
+
+    <script>
+        // 1. DUAL RSS ENGINE CONFIG
+        // Menggabungkan 2 Sumber Berita Berbeda (Antara & CNBC)
+        const RSS_SOURCES = {
+            utama: [
+                'https://www.antaranews.com/rss/terkini.xml',
+                'https://www.cnbcindonesia.com/news/rss'
+            ],
+            bisnis: [
+                'https://www.antaranews.com/rss/ekonomi.xml',
+                'https://www.cnbcindonesia.com/market/rss'
+            ],
+            tekno: [
+                'https://www.antaranews.com/rss/tekno.xml',
+                'https://www.cnbcindonesia.com/tech/rss'
+            ]
+        };
+
+        let currentData = [];
+
+        // 2. JAM REAL-TIME
+        function runClock() {
+            const timeStr = new Date().toLocaleTimeString('id-ID', { hour12: false });
+            document.getElementById('liveTime').innerText = timeStr + " WIB | ADITIYA PRO";
+        }
+        setInterval(runClock, 1000);
+
+        // 3. FETCH & MERGE LOGIC (Kecanggihan: Menggabungkan 2 RSS tanpa tabrakan)
+        async function fetchUltraNews(cat = 'utama') {
+            const container = document.getElementById('newsContainer');
+            const loader = document.getElementById('loading');
+            loader.style.display = 'block';
+            container.innerHTML = '';
+
+            try {
+                // Ambil data dari semua source secara paralel
+                const requests = RSS_SOURCES[cat].map(url => 
+                    fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`).then(res => res.json())
+                );
+                
+                const results = await Promise.all(requests);
+                
+                // Gabungkan dan Urutkan berdasarkan tanggal terbaru
+                let merged = [];
+                results.forEach(res => {
+                    if(res.status === 'ok') merged = [...merged, ...res.items];
+                });
+
+                merged.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+                currentData = merged;
+
+                renderUI(merged);
+            } catch (err) {
+                container.innerHTML = '<h2>Koneksi Terputus Bang...</h2>';
+            } finally {
+                loader.style.display = 'none';
+            }
+        }
+
+        function renderUI(items) {
+            const container = document.getElementById('newsContainer');
+            items.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = 'bento-card';
+                
+                // Deteksi Sumber (CNBC atau Antara)
+                const sourceName = item.link.includes('cnbc') ? 'CNBC Indonesia' : 'Antara News';
+                
+                card.innerHTML = `
+                    <div class="img-wrapper">
+                        <span class="source-tag">${sourceName}</span>
+                        <img src="${item.thumbnail || item.enclosure.link || 'https://images.unsplash.com/photo-1585829365234-78ec20041f5b?q=80&w=500'}" alt="News">
+                    </div>
+                    <div class="card-body">
+                        <h3>${item.title}</h3>
+                        <div class="card-meta">
+                            <span>📅 ${item.pubDate.split(' ')[0]}</span>
+                            <span style="color:var(--secondary)">Klik Detail →</span>
+                        </div>
+                        <p style="font-size:0.6rem; color:#444; margin-top:15px;">Verified by Aditiya Engine</p>
+                    </div>
+                `;
+                card.onclick = () => openModal(index);
+                container.appendChild(card);
+            });
+        }
+
+        // 4. MODAL BACA DI TEMPAT
+        function openModal(idx) {
+            const data = currentData[idx];
+            const overlay = document.getElementById('modalOverlay');
+            const content = document.getElementById('modalData');
+
+            content.innerHTML = `
+                <div style="margin-top:20px;">
+                    <span style="background:var(--primary); padding:5px 15px; border-radius:50px; font-size:0.7rem;">${data.categories[0] || 'BERITA'}</span>
+                    <h2 style="font-size:2.2rem; margin:20px 0; font-family:'Space Grotesk'">${data.title}</h2>
+                    <img src="${data.thumbnail || ''}" style="width:100%; border-radius:20px; margin-bottom:25px;">
+                    <div style="color:#a1a1aa; line-height:2; font-size:1.1rem;">
+                        ${data.content || data.description}
+                    </div>
+                    <div style="margin-top:40px; border-top:1px solid #333; padding-top:20px; color:var(--secondary)">
+                        <strong>Author:</strong> ${data.author || 'Indonesia News Staff'} | <strong>Publisher:</strong> Aditiya RSS Engine
+                    </div>
+                </div>
+            `;
+            overlay.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // 5. INTERFACE CONTROL
+        function toggleMenu() {
+            const m = document.getElementById('dropMenu');
+            m.style.display = m.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function switchFeed(type) {
+            fetchUltraNews(type);
+            toggleMenu();
+        }
+
+        function showAuthor() {
+            alert("Indonesia News Pro Edition\n--------------------------\nCreated by: Aditiya\nStatus: Official Developer\nWhatsApp: Tersedia di tombol pojok kanan bawah.");
+            toggleMenu();
+        }
+
+        // Jalankan Pas Start
+        fetchUltraNews();
+        runClock();
+
+        // Tutup menu jika klik di luar
+        window.onclick = function(event) {
+            if (!event.target.matches('.menu-dots')) {
+                document.getElementById('dropMenu').style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>
