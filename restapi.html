@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TikTok Downloader - Simple & Fast</title>
+    <style>
+        /* CSS Langsung di Sini */
+        :root {
+            --tiktok-pink: #fe2c55;
+            --tiktok-cyan: #25f4ee;
+            --bg-dark: #010101;
+            --card-bg: #1a1a1a;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-dark);
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .wrapper {
+            width: 100%;
+            max-width: 450px;
+            padding: 20px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            text-align: center;
+            border: 1px solid #333;
+        }
+
+        h1 { font-size: 1.5rem; margin-bottom: 20px; }
+        h1 span { color: var(--tiktok-pink); }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #333;
+            background: #000;
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+            transition: 0.3s;
+            box-sizing: border-box;
+        }
+
+        input:focus {
+            border-color: var(--tiktok-cyan);
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(45deg, var(--tiktok-pink), #ff5e7e);
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        button:active { transform: scale(0.98); }
+        button:disabled { background: #555; cursor: not-allowed; }
+
+        #result {
+            display: none;
+            margin-top: 25px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .preview-img {
+            width: 100%;
+            max-height: 250px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .download-btn {
+            display: block;
+            background: var(--tiktok-cyan);
+            color: #000;
+            text-decoration: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .loader {
+            display: none;
+            margin: 10px auto;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--tiktok-pink);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+<div class="wrapper">
+    <div class="card">
+        <h1>Tik<span>Down</span></h1>
+        <div class="input-group">
+            <input type="text" id="urlInput" placeholder="Tempel link video TikTok di sini...">
+        </div>
+        <button id="getBtn" onclick="processVideo()">Ambil Video</button>
+        <div class="loader" id="loader"></div>
+
+        <div id="result">
+            <img id="thumb" class="preview-img" src="" alt="Thumbnail">
+            <p id="title" style="font-size: 14px; color: #ccc;"></p>
+            <a id="dlVideo" class="download-link download-btn" href="#" target="_blank">Download MP4</a>
+            <a id="dlMusic" class="download-link" href="#" target="_blank" style="color: #aaa; font-size: 12px; display: block; margin-top: 10px;">Download Audio (MP3)</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    // JavaScript Langsung di Sini
+    async function processVideo() {
+        const url = document.getElementById('urlInput').value;
+        const btn = document.getElementById('getBtn');
+        const loader = document.getElementById('loader');
+        const result = document.getElementById('result');
+
+        if (!url || !url.includes('tiktok.com')) {
+            alert('Tolong masukkan URL TikTok yang valid!');
+            return;
+        }
+
+        // Tampilan Loading
+        btn.style.display = 'none';
+        loader.style.display = 'block';
+        result.style.display = 'none';
+
+        try {
+            // Kita pakai API Tikwm langsung (Client-side friendly)
+            const response = await fetch(`https://www.tikwm.com/api/?url=${encodeURIComponent(url)}`);
+            const resData = await response.json();
+
+            if (resData.code === 0) {
+                const data = resData.data;
+                
+                document.getElementById('thumb').src = data.cover;
+                document.getElementById('title').innerText = data.title;
+                document.getElementById('dlVideo').href = data.play; // No Watermark
+                document.getElementById('dlMusic').href = data.music;
+                
+                result.style.display = 'block';
+            } else {
+                alert('Gagal: ' + (resData.msg || 'Cek kembali link video.'));
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Terjadi kesalahan jaringan atau API sedang down.');
+        } finally {
+            btn.style.display = 'block';
+            loader.style.display = 'none';
+        }
+    }
+</script>
+
+</body>
+</html>
