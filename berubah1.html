@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prajurit Paripurna - Elite Dashboard</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --p: #00f2ff; /* Cyan Neon */
+            --bg: #020617; 
+            --card: rgba(15, 23, 42, 0.8);
+            --t: #f8fafc; 
+            --s: #10b981; /* Emerald */
+            --d: #f43f5e; /* Rose Red */
+            --accent: #fbbf24; /* Gold */
+        }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: radial-gradient(circle at top right, #0f172a, #020617);
+            color: var(--t); 
+            margin: 0; 
+            padding: 15px;
+            min-height: 100vh;
+        }
+
+        .container { width: 100%; max-width: 500px; margin: auto; }
+
+        /* Animasi Glow */
+        .glow-text { text-shadow: 0 0 15px var(--p); }
+
+        .card { 
+            background: var(--card); 
+            backdrop-filter: blur(12px);
+            padding: 20px; 
+            border-radius: 24px; 
+            margin-bottom: 15px; 
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        #clock { 
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.2rem; 
+            font-weight: 900; 
+            text-align: center; 
+            color: var(--p); 
+            letter-spacing: 2px;
+            margin: 10px 0;
+        }
+
+        /* Progress Styling */
+        .prog-label { display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: bold; margin-bottom: 8px; }
+        .progress-outer { background: rgba(255,255,255,0.05); height: 12px; border-radius: 50px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); }
+        #progress-bar { 
+            background: linear-gradient(90deg, #00f2ff, #10b981); 
+            height: 100%; width: 0%; transition: 1s cubic-bezier(0.17, 0.67, 0.83, 0.67); 
+            box-shadow: 0 0 10px var(--p);
+        }
+
+        input { 
+            background: rgba(0,0,0,0.3); color: white; border: 1px solid rgba(255,255,255,0.1); 
+            border-radius: 12px; padding: 12px; text-align: center; font-weight: bold; width: 100%; box-sizing: border-box;
+        }
+        button { 
+            background: linear-gradient(135deg, var(--p), var(--s)); 
+            color: #000; border: none; padding: 15px; border-radius: 14px; 
+            font-weight: 900; cursor: pointer; width: 100%; margin-top: 10px;
+            font-family: 'Orbitron', sans-serif; letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(0, 242, 255, 0.3);
+        }
+
+        .task-list { max-height: 480px; overflow-y: auto; scrollbar-width: none; }
+        .task-list::-webkit-scrollbar { display: none; }
+
+        .task-item { 
+            background: rgba(255,255,255,0.02);
+            border-radius: 16px; padding: 15px; margin-bottom: 10px;
+            display: flex; justify-content: space-between; align-items: center;
+            border: 1px solid rgba(255,255,255,0.05); transition: 0.3s;
+        }
+        
+        .sholat { border-left: 5px solid var(--accent); background: rgba(251, 191, 36, 0.05); }
+
+        .time-tag { 
+            font-family: 'Orbitron', sans-serif; color: var(--p); font-size: 0.8rem; 
+            display: inline-block; margin-bottom: 4px; 
+        }
+
+        .check-box { 
+            width: 42px; height: 42px; border-radius: 12px; border: 2px solid rgba(255,255,255,0.2);
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
+        }
+        .checked { background: var(--s); border-color: var(--s); color: white; box-shadow: 0 0 15px var(--s); }
+        .failed { border-color: var(--d); color: var(--d); font-size: 0.6rem; font-weight: 900; }
+        .locked { opacity: 0.3; filter: blur(0.5px); pointer-events: none; }
+
+        .index-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
+        .index-item { background: rgba(0,0,0,0.2); padding: 10px; border-radius: 14px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
+        .badge { font-size: 0.65rem; padding: 3px 8px; border-radius: 6px; font-weight: 900; margin-top: 5px; display: inline-block; }
+
+        .motivasi-box { font-size: 0.85rem; text-align: center; color: var(--accent); font-style: italic; margin-top: 15px; opacity: 0.9; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- REGISTRASI -->
+    <div id="step-1" class="card hidden">
+        <h2 style="text-align:center; font-family:'Orbitron'; color:var(--p)">SYSTEM ACTIVATION</h2>
+        <input type="text" id="reg-name" placeholder="NAMA LENGKAP">
+        <input type="text" id="reg-loc" placeholder="PRINGSEWU / LOKASI">
+        <input type="number" id="reg-age" placeholder="UMUR">
+        <button onclick="submitReg()">INITIALIZE</button>
+    </div>
+
+    <!-- UPDATE FISIK -->
+    <div id="step-2" class="card hidden">
+        <h2 style="text-align:center; font-family:'Orbitron'; color:var(--p)">DAILY REPORT</h2>
+        <p id="greet" style="text-align:center; opacity:0.7; font-size:0.9rem;"></p>
+        <div class="index-grid">
+            <div><small>TB</small><input type="number" id="up-tb" value="162"></div>
+            <div><small>BB</small><input type="number" id="up-bb" value="60"></div>
+            <div><small>UMUR</small><input type="number" id="up-age" value="16"></div>
+        </div>
+        <button onclick="submitDaily()">UPDATE STATUS</button>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div id="main-ui" class="hidden">
+        <div id="clock" class="glow-text">00:00:00</div>
+        
+        <div class="card">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span id="display-name" style="font-family:'Orbitron'; font-weight:900; color:var(--p)">PRAJURIT</span>
+                <span id="display-day" style="background:var(--accent); color:#000; padding:2px 12px; border-radius:8px; font-weight:900; font-size:0.7rem;">DAY 1</span>
+            </div>
+
+            <div class="index-grid">
+                <div class="index-item">
+                    <small style="opacity:0.5; font-size:0.6rem; display:block;">HEIGHT/WEIGHT</small>
+                    <span id="stat-tb-bb" style="font-weight:bold; font-size:0.9rem;">-</span>
+                </div>
+                <div class="index-item">
+                    <small style="opacity:0.5; font-size:0.6rem; display:block;">BODY INDEX</small>
+                    <span id="stat-bmi-badge" class="badge">-</span>
+                </div>
+                <div class="index-item">
+                    <small style="opacity:0.5; font-size:0.6rem; display:block;">COMPLETION</small>
+                    <span id="stat-percent" style="font-weight:bold; font-size:0.9rem;">0%</span>
+                </div>
+            </div>
+
+            <div style="margin-top:15px;">
+                <div class="prog-label"><span>MISSION PROGRESS</span> <span id="prog-val">0%</span></div>
+                <div class="progress-outer"><div id="progress-bar"></div></div>
+            </div>
+            
+            <div id="motivasi" class="motivasi-box"></div>
+        </div>
+
+        <div class="card" style="padding:10px;">
+            <h3 style="font-family:'Orbitron'; font-size:0.8rem; margin:10px; color:var(--p);">OPERATIONAL LOG</h3>
+            <div id="task-list" class="task-list"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let db = JSON.parse(localStorage.getItem('p_db_ultimate')) || { profile: null, day: 0, lastUpdateDate: '', tasks: [] };
+
+    const quotes = [
+        "Disiplin adalah nafas prajurit sejati.",
+        "Rasa lelah akan hilang, tapi hasil tidak akan pernah bohong.",
+        "Jaga raga, jaga jiwa, demi Pringsewu dan Indonesia.",
+        "Kelor di gelasmu, mental baja di jiwamu.",
+        "TNI tidak mencari yang kuat, tapi mencari yang tidak bisa menyerah.",
+        "Postur tegak, dahi cerah, masa depan cerah."
+    ];
+
+    const missions = [
+        { t: "04:15", n: "WAKE UP & HYDRATE", d: "Minum 2 gelas air putih suhu ruang.", s: false },
+        { t: "04:30", n: "TAHAJUD & MEDITATION", d: "Ketenangan batin sebelum bertugas.", s: false },
+        { t: "04:48", n: "SUBUH PRAYER", d: "Wajib berjamaah untuk keberkahan.", s: true },
+        { t: "05:15", n: "PHYSICAL: HANGING", d: "Sesi 1: Stimulasi tinggi badan 10 menit.", s: false },
+        { t: "05:30", n: "PHYSICAL: CORE STRENGTH", d: "Pushup Kepal & Situp 3 Set.", s: false },
+        { t: "05:50", n: "PHYSICAL: SKIPPING", d: "200-300 lompatan intensif.", s: false },
+        { t: "06:15", n: "NUTRIENT: MORINGA", d: "Seduhan Daun Kelor (Superfood).", s: false },
+        { t: "06:30", n: "HYGIENE & SKINCARE", d: "Mandi dingin & bersihkan area dahi.", s: false },
+        { t: "07:00", n: "SMK DUTY: POSTURE", d: "Sekolah. Duduk tegak 90 derajat.", s: false },
+        { t: "09:30", n: "HYDRATION CHECK", d: "Habiskan minimal 600ml air putih.", s: false },
+        { t: "12:09", n: "DZUHUR PRAYER", d: "Suci jiwa di tengah kesibukan.", s: true },
+        { t: "12:30", n: "DETOX: SAMBILOTO", d: "Konsumsi 3 lembar daun sambiloto.", s: false },
+        { t: "14:15", n: "PROTEIN INTAKE", d: "Makan siang tinggi protein (Ikan/Ayam).", s: false },
+        { t: "15:20", n: "ASHAR PRAYER", d: "Tegakkan pilar agama tepat waktu.", s: true },
+        { t: "16:00", n: "PHYSICAL: ENDURANCE", d: "Lari sore 15 menit / Jurus Silat.", s: false },
+        { t: "17:00", n: "PHYSICAL: HANGING 2", d: "Peregangan tulang belakang sesi sore.", s: false },
+        { t: "17:45", n: "EVENING HYGIENE", d: "Bilas keringat, jaga kebersihan kulit.", s: false },
+        { t: "18:09", n: "MAGHRIB PRAYER", d: "Waktu tenang & introspeksi diri.", s: true },
+        { t: "18:45", n: "RECOVERY MEAL", d: "Makan malam ringan & bergizi.", s: false },
+        { t: "19:18", n: "ISYA PRAYER", d: "Tuntaskan misi spiritual harian.", s: true },
+        { t: "19:45", n: "SCREEN FASTING", d: "Puasa gadget. Jaga pandangan & martabat.", s: false },
+        { t: "20:30", n: "TECH SKILL: BOT DEV", d: "Ngoding / Belajar IT SMK.", s: false },
+        { t: "21:15", n: "NUTRIENT: MORINGA 2", d: "Recovery sel tubuh saat istirahat.", s: false },
+        { t: "21:35", n: "POSTURE: COBRA STRETCH", d: "Relaksasi tulang belakang & nafas.", s: false },
+        { t: "22:00", n: "DEEP SLEEP (DARK)", d: "Tidur total. Regenerasi hormon TNI.", s: false }
+    ];
+
+    function init() {
+        if (!db.profile) {
+            document.getElementById('step-1').classList.remove('hidden');
+        } else {
+            const today = new Date().toLocaleDateString('id-ID');
+            if (db.lastUpdateDate !== today) {
+                document.getElementById('step-2').classList.remove('hidden');
+                document.getElementById('greet').innerText = `WELCOME BACK, ${db.profile.name.split(' ')[0]}`;
+                document.getElementById('up-tb').value = db.lastTb || 162;
+                document.getElementById('up-bb').value = db.lastBb || 60;
+                document.getElementById('up-age').value = db.profile.age;
+            } else {
+                showMain();
+            }
+        }
+    }
+
+    function submitReg() {
+        const n = document.getElementById('reg-name').value;
+        const l = document.getElementById('reg-loc').value;
+        const a = document.getElementById('reg-age').value;
+        if(n && l && a) {
+            db.profile = { name: n, loc: l, age: a };
+            db.day = 1;
+            db.tasks = missions.map(t => ({...t, done: false}));
+            save(); location.reload();
+        }
+    }
+
+    function submitDaily() {
+        const tb = document.getElementById('up-tb').value;
+        const bb = document.getElementById('up-bb').value;
+        const ag = document.getElementById('up-age').value;
+        if(tb && bb) {
+            db.lastUpdateDate = new Date().toLocaleDateString('id-ID');
+            db.lastTb = tb; db.lastBb = bb; db.profile.age = ag;
+            save(); showMain();
+        }
+    }
+
+    function calculateBMI(tb, bb) {
+        let bmi = bb / ((tb/100) * (tb/100));
+        if(bmi < 18.5) return { s: "UNDERWEIGHT", c: "#fbbf24" };
+        if(bmi < 25) return { s: "IDEAL", c: "#10b981" };
+        return { s: "OVERWEIGHT", c: "#f43f5e" };
+    }
+
+    function showMain() {
+        document.getElementById('step-1').classList.add('hidden');
+        document.getElementById('step-2').classList.add('hidden');
+        document.getElementById('main-ui').classList.remove('hidden');
+        document.getElementById('display-name').innerText = db.profile.name.toUpperCase();
+        document.getElementById('display-day').innerText = `DAY ${db.day}`;
+        document.getElementById('stat-tb-bb').innerText = `${db.lastTb}CM / ${db.lastBb}KG`;
+        
+        let bmi = calculateBMI(db.lastTb, db.lastBb);
+        let badge = document.getElementById('stat-bmi-badge');
+        badge.innerText = bmi.s;
+        badge.style.backgroundColor = bmi.c;
+        badge.style.color = "#000";
+
+        document.getElementById('motivasi').innerText = `"${quotes[Math.floor(Math.random() * quotes.length)]}"`;
+        renderTasks();
+    }
+
+    function renderTasks() {
+        const list = document.getElementById('task-list');
+        list.innerHTML = '';
+        const now = new Date();
+        const currentTime = now.getHours() * 60 + now.getMinutes();
+        let doneCount = 0;
+
+        db.tasks.forEach((task, i) => {
+            const [h, m] = task.t.split(':');
+            const taskTime = parseInt(h) * 60 + parseInt(m);
+            const isLate = currentTime > taskTime;
+            const canCheck = !isLate && !task.done;
+            const isFailed = isLate && !task.done;
+
+            if(task.done) doneCount++;
+
+            const div = document.createElement('div');
+            div.className = `task-item ${task.s ? 'sholat' : ''} ${isFailed ? 'locked' : ''}`;
+            div.innerHTML = `
+                <div style="flex:1;">
+                    <span class="time-tag">${task.t}</span>
+                    <div style="font-size:0.85rem; font-weight:700;">${task.n}</div>
+                    <div style="font-size:0.65rem; opacity:0.6;">${task.d}</div>
+                    ${isFailed ? '<div style="color:var(--d); font-size:0.55rem; font-weight:900; margin-top:5px;">MISSION FAILED</div>' : ''}
+                </div>
+                <div class="check-box ${task.done ? 'checked' : (isFailed ? 'failed' : '')}" 
+                     onclick="${canCheck ? `toggleTask(${i})` : ''}">
+                    ${task.done ? '✓' : (isFailed ? 'X' : '')}
+                </div>
+            `;
+            list.appendChild(div);
+        });
+
+        const percent = Math.round((doneCount / db.tasks.length) * 100);
+        document.getElementById('progress-bar').style.width = percent + "%";
+        document.getElementById('prog-val').innerText = percent + "%";
+        document.getElementById('stat-percent').innerText = percent + "%";
+    }
+
+    function toggleTask(i) {
+        db.tasks[i].done = true;
+        save(); renderTasks();
+    }
+
+    function save() { localStorage.setItem('p_db_ultimate', JSON.stringify(db)); }
+
+    setInterval(() => {
+        const n = new Date();
+        document.getElementById('clock').innerText = n.toLocaleTimeString('id-ID');
+        if (db.profile && db.lastUpdateDate !== '' && db.lastUpdateDate !== n.toLocaleDateString('id-ID')) {
+            db.day++;
+            db.tasks = missions.map(t => ({...t, done: false}));
+            db.lastUpdateDate = ''; 
+            save(); location.reload(); 
+        }
+        if (n.getSeconds() === 0) renderTasks();
+    }, 1000);
+
+    init();
+</script>
+</body>
+</html>
