@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TikDown MENYALA 🔥 | No Watermark</title>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap');
+
+        :root {
+            --bg-dark: #09090b;
+            --card-bg: #111114;
+            --text-main: #fafafa;
+            --text-muted: #a1a1aa;
+            
+            /* Warna Menyala */
+            --primary-glow: #fe2c55; /* TikTok Pink */
+            --secondary-glow: #25f4ee; /* TikTok Cyan */
+            --btn-grad: linear-gradient(45deg, #fe2c55, #ff5e7e);
+            --neon-shadow: 0 0 15px rgba(254, 44, 85, 0.5);
+            --neon-shadow-cyan: 0 0 15px rgba(37, 244, 238, 0.5);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /* Latar Belakang Menyala */
+        body::before {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: var(--primary-glow);
+            border-radius: 50%;
+            filter: blur(150px);
+            opacity: 0.2;
+            top: 10%;
+            left: 10%;
+            z-index: -1;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: var(--secondary-glow);
+            border-radius: 50%;
+            filter: blur(150px);
+            opacity: 0.2;
+            bottom: 10%;
+            right: 10%;
+            z-index: -1;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            z-index: 10;
+        }
+
+        /* Card Utama JOS JIS */
+        .main-card {
+            background: var(--card-bg);
+            padding: 40px 30px;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            text-align: center;
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .main-card:hover {
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5), var(--neon-shadow);
+            transform: translateY(-5px);
+        }
+
+        /* Judul MENYALA */
+        h1 {
+            font-weight: 800;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+            background: linear-gradient(to right, #fff, #bbb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        h1 span.pink { color: var(--primary-glow); -webkit-text-fill-color: var(--primary-glow); text-shadow: var(--neon-shadow); }
+        h1 span.cyan { color: var(--secondary-glow); -webkit-text-fill-color: var(--secondary-glow); text-shadow: var(--neon-shadow-cyan); }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 30px;
+            font-weight: 300;
+        }
+
+        /* Input Group MENYALA */
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 100%;
+            padding: 18px 20px;
+            border-radius: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.05);
+            background: rgba(0, 0, 0, 0.2);
+            color: #fff;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            border-color: var(--secondary-glow);
+            box-shadow: var(--neon-shadow-cyan);
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        /* Tombol MENYALA ABANGKUUH */
+        .btn-prime {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            background: var(--btn-grad);
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-prime:hover {
+            box-shadow: var(--neon-shadow);
+            transform: scale(1.02);
+        }
+
+        .btn-prime:active {
+            transform: scale(0.98);
+        }
+
+        /* Loading Animation */
+        .loader {
+            display: none;
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin: 10px auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Result Section (Awalnya Sembunyi) */
+        #result {
+            display: none;
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            animation: fadeInUp 0.5s ease;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .preview-card {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            text-align: left;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .preview-flex {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .thumb-img {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .video-title {
+            font-size: 0.9rem;
+            color: var(--text-main);
+            font-weight: 400;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* Tombol Download di Result */
+        .dl-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .dl-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 14px;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .dl-video {
+            background: var(--text-main);
+            color: #000;
+        }
+
+        .dl-video:hover {
+            box-shadow: 0 0 15px rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .dl-music {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-muted);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .dl-music:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        /* Footer API Info */
+        .footer-api {
+            margin-top: 20px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            opacity: 0.5;
+        }
+        .footer-api code {
+            background: #000;
+            padding: 2px 5px;
+            border-radius: 4px;
+            color: var(--secondary-glow);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 480px) {
+            .main-card { padding: 30px 20px; }
+            h1 { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="ui-wrapper">
+        <div class="main-card">
+            <h1>Tik<span class="pink">Down</span><span class="cyan">.</span></h1>
+            <p class="subtitle">Download TikTok MP4 & MP3 Tanpa Watermark</p>
+
+            <div class="input-group">
+                <input type="text" id="urlInput" placeholder="Tempel link video TikTok di sini bang...">
+            </div>
+
+            <button class="btn-prime" id="getBtn" onclick="processTikTok()">
+                <span id="btnText">Ambil Video 🚀</span>
+            </button>
+            <div class="loader" id="loader"></div>
+
+            <div id="result">
+                <div class="preview-card">
+                    <div class="preview-flex">
+                        <img id="thumb" class="thumb-img" src="" alt="Thumbnail">
+                        <p id="title" class="video-title"></p>
+                    </div>
+                </div>
+
+                <div class="dl-group">
+                    <a id="dlVideo" class="dl-link dl-video" href="#" target="_blank">
+                        Download Video (MP4) 📥
+                    </a>
+                    <a id="dlMusic" class="dl-link dl-music" href="#" target="_blank">
+                        Download Audio (MP3) 🎵
+                    </a>
+                </div>
+            </div>
+            
+            <div class="footer-api">
+                Gunakan mode API: <code>?url=LINK_TIKTOK</code>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // FUNGSI UTAMA SCRAPER
+        async function fetchTikTokData(targetUrl) {
+            try {
+                // Gunakan API Tikwm langsung (Client-side friendly, support CORS)
+                // Kita tambahkan awalan https jika link dari bot tidak lengkap
+                if (!targetUrl.startsWith('http')) targetUrl = 'https://' + targetUrl;
+
+                const response = await fetch(`https://www.tikwm.com/api/?url=${encodeURIComponent(targetUrl)}`);
+                const res = await response.json();
+                
+                if (res.code === 0) {
+                    const d = res.data;
+                    return {
+                        status: true,
+                        title: d.title,
+                        // Pastikan link lengkap dengan domain tikwm
+                        video: d.play.startsWith('http') ? d.play : "https://www.tikwm.com" + d.play, 
+                        audio: d.music.startsWith('http') ? d.music : "https://www.tikwm.com" + d.music,
+                        thumbnail: d.cover.startsWith('http') ? d.cover : "https://www.tikwm.com" + d.cover
+                    };
+                } else {
+                    return { status: false, message: "Video gagal diambil. Pastikan link publik & benar bang." };
+                }
+            } catch (e) {
+                return { status: false, message: "Terjadi kesalahan koneksi atau API down." };
+            }
+        }
+
+        // --- LOGIKA MODE API (UNTUK BOT WA) ---
+        const params = new URLSearchParams(window.location.search);
+        const urlParam = params.get('url');
+
+        if (urlParam) {
+            // Sembunyikan semua UI
+            document.getElementById('ui-wrapper').style.display = 'none';
+            // Set header biar dikira JSON
+            document.title = "API TikTok Download";
+
+            fetchTikTokData(urlParam).then(data => {
+                // Tampilkan JSON murni agar bot tinggal scrap teks di layar
+                document.body.innerHTML = `<pre style="color: #00ff00; background: #000; padding: 20px;">${JSON.stringify(data, null, 2)}</pre>`;
+            });
+        }
+        // --------------------------------------
+
+        // --- LOGIKA MODE WEB TAMPILAN ---
+        async function processTikTok() {
+            const url = document.getElementById('urlInput').value.trim();
+            const btn = document.getElementById('getBtn');
+            const btnText = document.getElementById('btnText');
+            const loader = document.getElementById('loader');
+            const result = document.getElementById('result');
+
+            if (!url) {
+                alert('Tolong tempel link TikTok-nya dulu bang!');
+                return;
+            }
+
+            if (!url.includes('tiktok.com')) {
+                alert('Link-nya kayaknya bukan link TikTok deh bang, cek lagi ya.');
+                return;
+            }
+
+            // State Loading: Menyala
+            btn.style.display = 'none';
+            loader.style.display = 'block';
+            result.style.display = 'none';
+
+            const data = await fetchTikTokData(url);
+
+            if (data.status) {
+                // Sukses: Tampilkan data Jos Jis
+                document.getElementById('thumb').src = data.thumbnail;
+                document.getElementById('title').innerText = data.title || "TikTok Video";
+                
+                // Set link download
+                const vBtn = document.getElementById('dlVideo');
+                const mBtn = document.getElementById('dlMusic');
+                vBtn.href = data.video;
+                mBtn.href = data.audio;
+
+                // Trik force download (opsional, beberapa browser blokir)
+                // vBtn.setAttribute('download', `tikdown_${Date.now()}.mp4`);
+
+                result.style.display = 'block';
+            } else {
+                // Gagal
+                alert('Gagal bang: ' + data.message);
+            }
+
+            // Kembalikan state tombol
+            btn.style.display = 'block';
+            loader.style.display = 'none';
+        }
+    </script>
+</body>
+</html>
