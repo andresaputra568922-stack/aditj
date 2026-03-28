@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Operasi Prajurit Paripurna 365</title>
+    <style>
+        :root { 
+            --p: #00ffcc; --bg: #010409; --c: #0d1117; --t: #f0f6fc; 
+            --s: #238636; --d: #da3633; --accent: #e3b341; 
+        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--t); margin: 0; padding: 12px; }
+        .container { width: 100%; max-width: 550px; margin: auto; }
+        .card { 
+            background: var(--c); padding: 15px; border-radius: 12px; margin-bottom: 12px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.8); border: 1px solid #30363d; 
+        }
+        #clock { font-size: 3rem; font-weight: 900; text-align: center; color: var(--p); text-shadow: 0 0 20px rgba(0,255,204,0.3); margin: 5px 0; }
+        
+        .progress-container { background: #161b22; height: 10px; border-radius: 5px; margin: 10px 0; overflow: hidden; border: 1px solid #30363d; }
+        #progress-bar { background: linear-gradient(90deg, var(--s), var(--p)); height: 100%; width: 0%; transition: 0.5s; }
+        
+        input, button { width: 100%; padding: 12px; margin-top: 8px; border-radius: 8px; border: none; box-sizing: border-box; font-family: inherit; }
+        input { background: #0d1117; color: white; border: 1px solid #30363d; text-align: center; font-weight: bold; }
+        button { cursor: pointer; font-weight: 800; background: var(--p); color: #0d1117; transition: 0.2s; }
+        button:hover { filter: brightness(1.2); }
+        
+        .task-list { max-height: 450px; overflow-y: auto; padding-right: 5px; }
+        .task-item { border-bottom: 1px solid #30363d; padding: 12px 0; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; }
+        .time-tag { color: var(--p); font-size: 0.75rem; font-weight: bold; background: rgba(0,255,204,0.1); padding: 2px 6px; border-radius: 4px; }
+        .task-info { flex: 1; margin-left: 10px; }
+        .task-name { font-size: 0.85rem; font-weight: 600; display: block; }
+        .task-desc { font-size: 0.7rem; color: #8b949e; }
+        
+        .sholat { border-left: 4px solid var(--accent); padding-left: 10px; }
+        .check-box { width: 35px; height: 35px; border: 2px solid var(--p); border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; }
+        .checked { background: var(--s); border-color: var(--s); color: white; box-shadow: 0 0 10px var(--s); }
+        .failed { border-color: var(--d); color: var(--d); font-size: 0.55rem; font-weight: 900; text-align: center; }
+        .locked { opacity: 0.3; filter: grayscale(1); pointer-events: none; }
+        
+        .index-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
+        .index-item { background: #161b22; padding: 8px; border-radius: 8px; text-align: center; border: 1px solid #30363d; }
+        .bmi-badge { font-size: 0.65rem; padding: 2px 6px; border-radius: 10px; font-weight: bold; margin-top: 4px; display: inline-block; }
+        .motivasi { font-style: italic; color: var(--accent); font-size: 0.8rem; text-align: center; margin-top: 10px; min-height: 30px; }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: var(--p); border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="step-1" class="card hidden">
+        <h2 style="color:var(--p); text-align:center;">🎖️ INISIASI PRAJURIT SEJATI</h2>
+        <input type="text" id="reg-name" placeholder="Nama Lengkap">
+        <input type="text" id="reg-loc" placeholder="Lokasi (Pringsewu)">
+        <input type="number" id="reg-age" placeholder="Umur">
+        <button onclick="submitReg()">AKTIFKAN PROTOKOL</button>
+    </div>
+
+    <div id="step-2" class="card hidden">
+        <h2 style="color:var(--p); text-align:center;">📏 LAPORAN KONDISI</h2>
+        <p id="greet" style="text-align:center; font-size:0.85rem;"></p>
+        <div class="index-grid">
+            <div><small>TB (CM)</small><input type="number" id="up-tb" value="162"></div>
+            <div><small>BB (KG)</small><input type="number" id="up-bb" value="60"></div>
+            <div><small>UMUR</small><input type="number" id="up-age" value="16"></div>
+        </div>
+        <button onclick="submitDaily()">UPDATE & MASUK DASHBOARD</button>
+    </div>
+
+    <div id="main-ui" class="hidden">
+        <div id="clock">00:00:00</div>
+        
+        <div class="card">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h3 id="display-name" style="margin:0; font-size:1.1rem; color:var(--p)">PRAJURIT</h3>
+                <span id="display-day" style="background:var(--p); color:black; padding:2px 10px; border-radius:5px; font-weight:900; font-size:0.8rem;">DAY 1</span>
+            </div>
+            
+            <div class="index-grid">
+                <div class="index-item">
+                    <small style="opacity:0.6; font-size:0.55rem;">TB / BB</small><br>
+                    <span id="stat-tb-bb" style="font-weight:bold; font-size:0.9rem;">-</span>
+                </div>
+                <div class="index-item">
+                    <small style="opacity:0.6; font-size:0.55rem;">STATUS (BMI)</small><br>
+                    <span id="stat-bmi-badge" class="bmi-badge">-</span>
+                </div>
+                <div class="index-item">
+                    <small style="opacity:0.6; font-size:0.55rem;">PROGRES</small><br>
+                    <span id="stat-percent" style="font-weight:bold; font-size:0.9rem;">0%</span>
+                </div>
+            </div>
+            <div class="progress-container"><div id="progress-bar"></div></div>
+            <div id="motivasi" class="motivasi"></div>
+        </div>
+
+        <div class="card">
+            <h2 style="font-size:0.9rem; border-left:4px solid var(--p); padding-left:10px; margin-bottom:12px;">LOG MISI PARIPURNA</h2>
+            <div id="task-list" class="task-list"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let db = JSON.parse(localStorage.getItem('p_db_paripurna')) || { profile: null, day: 0, lastUpdateDate: '', tasks: [] };
+
+    const quotes = [
+        "Masa depanmu ditentukan oleh apa yang kamu lakukan hari ini.",
+        "Pringsewu butuh pemuda kuat, cerdas, dan bermartabat!",
+        "Kelor & Sambiloto: Nutrisi alami sang pemenang.",
+        "Disiplin adalah kemampuan untuk melakukan apa yang harus dilakukan.",
+        "Ngoding bot melatih logika, latihan fisik melatih raga!",
+        "Jadilah versi terbaik dirimu setiap harinya."
+    ];
+
+    const dailyMission = [
+        { t: "04:15", n: "Bangun & Air Putih", d: "Minum 2 gelas air suhu ruang segera.", s: false },
+        { t: "04:30", n: "Tahajud & Zikir", d: "Ketenangan mental sebelum tempur.", s: false },
+        { t: "04:48", n: "SHOLAT SUBUH", d: "Wajib berjamaah di masjid.", s: true },
+        { t: "05:15", n: "Hanging & Pull Up", d: "Sesi 1: Fokus tinggi badan & kekuatan sayap.", s: false },
+        { t: "05:30", n: "Pushup Kepal & Situp", d: "3 Set x 20 Reps (Otot inti & dada).", s: false },
+        { t: "05:50", n: "Skipping (Loncak Tali)", d: "200 lompatan untuk stimulasi tulang.", s: false },
+        { t: "06:15", n: "Seduhan Kelor Pagi", d: "Superfood untuk daya tahan tubuh.", s: false },
+        { t: "06:30", n: "Mandi Dingin & Perawatan", d: "Segarkan saraf & jaga kebersihan dahi.", s: false },
+        { t: "07:00", n: "Masuk Sekolah (SMK)", d: "Jaga postur duduk tegak (Anti Bungkuk).", s: false },
+        { t: "09:30", n: "Hidrasi Sesi 2", d: "Habiskan 600ml air putih tambahan.", s: false },
+        { t: "12:09", n: "SHOLAT DZUHUR", d: "Ibadah tepat waktu di tengah tugas.", s: true },
+        { t: "12:30", n: "Sambiloto (3 Lembar)", d: "Detox alami pembersih darah.", s: false },
+        { t: "14:15", n: "Makan Siang Bergizi", d: "Protein tinggi, karbohidrat cukup.", s: false },
+        { t: "15:20", n: "SHOLAT ASHAR", d: "Kembali sujud, tenangkan jiwa.", s: true },
+        { t: "16:00", n: "Latihan Fisik Sore", d: "Lari 15 menit atau jurus silat.", s: false },
+        { t: "17:00", n: "Hanging Sesi 2", d: "Peregangan maksimal tulang belakang.", s: false },
+        { t: "17:45", n: "Mandi Bersih Sore", d: "Bilas keringat, jaga kesegaran kulit.", s: false },
+        { t: "18:09", n: "SHOLAT MAGHRIB", d: "Refleksi dan doa untuk hari ini.", s: true },
+        { t: "18:45", n: "Makan Malam & Diskusi", d: "Nutrisi malam untuk pemulihan sel.", s: false },
+        { t: "19:18", n: "SHOLAT ISYA", d: "Tuntaskan kewajiban lima waktu.", s: true },
+        { t: "19:45", n: "Puasa Gadget & Media Sosial", d: "Jaga pandangan, jaga pikiran, jaga martabat.", s: false },
+        { t: "20:30", n: "Ngoding / Belajar IT", d: "Kembangkan skill bot WhatsApp & SMK.", s: false },
+        { t: "21:15", n: "Seduhan Kelor Malam", d: "Nutrisi penutup sebelum istirahat.", s: false },
+        { t: "21:35", n: "Cobra Stretch & Box Breathing", d: "Relaksasi otot punggung & pernapasan.", s: false },
+        { t: "22:00", n: "TIDUR TOTAL (OFF HP)", d: "Regenerasi hormon pertumbuhan maksimal.", s: false }
+    ];
+
+    function init() {
+        if (!db.profile) {
+            document.getElementById('step-1').classList.remove('hidden');
+        } else {
+            const today = new Date().toLocaleDateString('id-ID');
+            if (db.lastUpdateDate !== today) {
+                document.getElementById('step-2').classList.remove('hidden');
+                document.getElementById('greet').innerText = `Lapor Pendekar ${db.profile.name.split(' ')[0]}, Masuk Hari ke-${db.day}:`;
+                document.getElementById('up-tb').value = db.lastTb || 162;
+                document.getElementById('up-bb').value = db.lastBb || 60;
+                document.getElementById('up-age').value = db.profile.age;
+            } else {
+                showMain();
+            }
+        }
+    }
+
+    function submitReg() {
+        const n = document.getElementById('reg-name').value;
+        const l = document.getElementById('reg-loc').value;
+        const a = document.getElementById('reg-age').value;
+        if(n && l && a) {
+            db.profile = { name: n, loc: l, age: a };
+            db.day = 1;
+            db.tasks = dailyMission.map(t => ({...t, done: false}));
+            save(); location.reload();
+        }
+    }
+
+    function submitDaily() {
+        const tb = document.getElementById('up-tb').value;
+        const bb = document.getElementById('up-bb').value;
+        const ag = document.getElementById('up-age').value;
+        if(tb && bb) {
+            db.lastUpdateDate = new Date().toLocaleDateString('id-ID');
+            db.lastTb = tb; db.lastBb = bb; db.profile.age = ag;
+            save(); showMain();
+        }
+    }
+
+    function calculateBMI(tb, bb) {
+        let bmi = bb / ((tb/100) * (tb/100));
+        if(bmi < 18.5) return { s: "KURANG", c: "#e3b341" };
+        if(bmi < 25) return { s: "IDEAL", c: "#00ffcc" };
+        return { s: "OVER", c: "#da3633" };
+    }
+
+    function showMain() {
+        document.getElementById('step-1').classList.add('hidden');
+        document.getElementById('step-2').classList.add('hidden');
+        document.getElementById('main-ui').classList.remove('hidden');
+        
+        document.getElementById('display-name').innerText = db.profile.name;
+        document.getElementById('display-day').innerText = `DAY ${db.day}`;
+        document.getElementById('stat-tb-bb').innerText = `${db.lastTb} / ${db.lastBb}`;
+        
+        let bmi = calculateBMI(db.lastTb, db.lastBb);
+        let badge = document.getElementById('stat-bmi-badge');
+        badge.innerText = bmi.s;
+        badge.style.backgroundColor = bmi.c;
+        badge.style.color = "#000";
+
+        document.getElementById('motivasi').innerText = `"${quotes[Math.floor(Math.random() * quotes.length)]}"`;
+        renderTasks();
+    }
+
+    function renderTasks() {
+        const list = document.getElementById('task-list');
+        list.innerHTML = '';
+        const now = new Date();
+        const currentTime = now.getHours() * 60 + now.getMinutes();
+        let doneCount = 0;
+
+        db.tasks.forEach((task, i) => {
+            const [h, m] = task.t.split(':');
+            const taskTime = parseInt(h) * 60 + parseInt(m);
+            const isLate = currentTime > taskTime;
+            const canCheck = !isLate && !task.done;
+            const isFailed = isLate && !task.done;
+
+            if(task.done) doneCount++;
+
+            const div = document.createElement('div');
+            div.className = `task-item ${task.s ? 'sholat' : ''} ${task.done ? 'checked-bg' : ''} ${isFailed ? 'locked' : ''}`;
+            div.innerHTML = `
+                <div class="task-info">
+                    <span class="time-tag">${task.t}</span>
+                    <span class="task-name">${task.n}</span>
+                    <span class="task-desc">${task.d}</span>
+                    ${isFailed ? '<div style="color:var(--d); font-size:0.6rem; font-weight:900;">WAKTU HABIS - MISI GAGAL</div>' : ''}
+                </div>
+                <div class="check-box ${task.done ? 'checked' : (isFailed ? 'failed' : '')}" 
+                     onclick="${canCheck ? `toggleTask(${i})` : ''}">
+                    ${task.done ? '✓' : (isFailed ? 'FAILED' : '')}
+                </div>
+            `;
+            list.appendChild(div);
+        });
+
+        const percent = Math.round((doneCount / db.tasks.length) * 100);
+        document.getElementById('progress-bar').style.width = percent + "%";
+        document.getElementById('stat-percent').innerText = percent + "%";
+    }
+
+    function toggleTask(i) {
+        db.tasks[i].done = true;
+        save(); renderTasks();
+    }
+
+    function save() { localStorage.setItem('p_db_paripurna', JSON.stringify(db)); }
+
+    setInterval(() => {
+        const n = new Date();
+        document.getElementById('clock').innerText = n.toLocaleTimeString('id-ID');
+        if (db.profile && db.lastUpdateDate !== '' && db.lastUpdateDate !== n.toLocaleDateString('id-ID')) {
+            location.reload(); 
+        }
+        if (n.getSeconds() === 0) renderTasks();
+    }, 1000);
+
+    init();
+</script>
+</body>
+  </html>
