@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premier Academy V10 - Eternal God</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --p: #0ea5e9; --s: #8b5cf6; --bg: #f8fafc;
+            --white: #ffffff; --text: #0f172a;
+            --glass: rgba(255, 255, 255, 0.95);
+            --border: rgba(14, 165, 233, 0.2);
+            --shadow: 0 20px 50px rgba(14, 165, 233, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; display: flex; flex-direction: column; }
+
+        nav {
+            padding: 15px 5%; display: flex; justify-content: space-between; align-items: center;
+            background: var(--glass); backdrop-filter: blur(20px);
+            position: sticky; top: 0; z-index: 1000; border-bottom: 2px solid var(--border);
+        }
+        .clock-v10 { background: var(--p); color: white; padding: 8px 18px; border-radius: 12px; font-weight: 800; font-size: 0.8rem; }
+
+        .pts-pill { display: flex; align-items: center; gap: 8px; background: #fef9c3; padding: 6px 15px; border-radius: 15px; border: 1px solid #fde047; }
+        .pts-val { color: #854d0e; font-weight: 800; font-size: 0.9rem; }
+        .btn-plus { background: var(--p); color: white; width: 22px; height: 22px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+
+        .dropdown {
+            position: absolute; right: 5%; top: 70px; background: white; 
+            width: 260px; border-radius: 25px; box-shadow: var(--shadow);
+            display: none; flex-direction: column; overflow: hidden; border: 1px solid var(--border); z-index: 2001;
+        }
+        .user-header { padding: 20px; background: #f8fafc; text-align: center; border-bottom: 1px solid #eee; }
+        .user-avatar { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 3px solid var(--p); margin-bottom: 10px; cursor: pointer; }
+        .dropdown .item { padding: 15px 20px; font-weight: 700; border-bottom: 1px solid #f1f5f9; cursor: pointer; display: flex; align-items: center; gap: 12px; font-size: 0.85rem; }
+
+        .screen { display: none; padding: 30px 5%; flex-direction: column; align-items: center; min-height: 80vh; width: 100%; animation: slideUp 0.4s ease; }
+        .screen.active { display: flex; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .crystal-card { background: var(--white); border: 1px solid var(--border); border-radius: 35px; padding: 30px; width: 100%; max-width: 500px; text-align: center; box-shadow: var(--shadow); position: relative; z-index: 5; }
+        .btn-elite { width: 100%; padding: 18px; border-radius: 20px; border: none; margin-top: 15px; background: linear-gradient(135deg, var(--p), var(--s)); color: white; font-weight: 800; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 20px rgba(14, 165, 233, 0.2); }
+        .btn-elite:active { transform: scale(0.95); }
+        .btn-surrender { background: #fee2e2; color: #ef4444; margin-top: 10px; }
+
+        .input-elite { width: 100%; padding: 18px; border-radius: 18px; border: 2px solid #e2e8f0; background: #f8fafc; text-align: center; margin-bottom: 15px; outline: none; font-size: 1.1rem; font-weight: 700; color: var(--text); }
+
+        .mode-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; margin-top: 20px; }
+        .mode-item { background: white; padding: 18px; border-radius: 20px; border: 1.5px solid #e2e8f0; cursor: pointer; transition: 0.2s; font-weight: 800; font-size: 0.7rem; }
+        .mode-item:hover { border-color: var(--p); background: #f0f9ff; }
+        .mode-item i { display: block; font-size: 1.5rem; margin-bottom: 8px; color: var(--p); }
+
+        #chat-widget { position: fixed; bottom: 20px; right: 20px; z-index: 2000; }
+        .chat-btn { width: 60px; height: 60px; background: var(--text); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.5rem; }
+        .chat-box { position: absolute; bottom: 75px; right: 0; width: 300px; height: 400px; background: white; border-radius: 25px; box-shadow: var(--shadow); display: none; flex-direction: column; border: 1px solid var(--border); overflow: hidden; }
+
+        footer { margin-top: auto; padding: 20px; text-align: center; font-size: 0.7rem; font-weight: 800; color: var(--p); opacity: 0.5; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="clock-v10" id="clock">00:00:00</div>
+    <div style="display:flex; gap:10px;">
+        <div id="nav-pts" class="pts-pill" style="display:none;">
+            <span class="pts-val"><span id="user-pts">0</span> <i class="fas fa-coins" style="color:#eab308;"></i></span>
+        </div>
+        <i class="fas fa-bars" onclick="toggleMenu()" style="cursor:pointer; color:var(--p); font-size:1.5rem; background:white; padding:8px; border-radius:10px;"></i>
+    </div>
+</nav>
+
+<div class="dropdown" id="dropdown">
+    <div class="user-header">
+        <img id="side-pp" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" class="user-avatar">
+        <div id="dd-name" style="font-weight:800;">Guest</div>
+        <div id="dd-id" style="font-size:0.7rem; color:#94a3b8;">#000000</div>
+    </div>
+    <div class="item" onclick="goHome()"><i class="fas fa-home"></i> Dashboard</div>
+    <div class="item" onclick="changeScreen('scr-tiktok')"><i class="fab fa-tiktok"></i> TikTok DL</div>
+    <div class="item" onclick="openShop()"><i class="fas fa-store"></i> Toko Poin</div>
+    <div class="item" onclick="location.reload()"><i class="fas fa-sync"></i> Refresh App</div>
+</div>
+
+<!-- SCREENS -->
+<section id="scr-welcome" class="screen active">
+    <div class="crystal-card">
+        <h1 style="font-size: 2.5rem; color:var(--p);">PREMIER<br><span style="color:var(--text); font-weight:300;">ACADEMY V10</span></h1>
+        <p style="margin:15px 0; color:#64748b;">Edisi Eternal God by Ditzya</p>
+        <button class="btn-elite" id="btn-start" onclick="initApp()">MULAI APLIKASI</button>
+    </div>
+</section>
+
+<section id="scr-reg" class="screen">
+    <div class="crystal-card">
+        <h2>DAFTAR</h2>
+        <input type="text" id="reg-name" class="input-elite" placeholder="Nama Anda...">
+        <button class="btn-elite" onclick="saveUser()">BUAT AKUN</button>
+    </div>
+</section>
+
+<section id="scr-dash" class="screen">
+    <div class="crystal-card">
+        <h3 id="dash-welcome">Halo!</h3>
+        <div class="mode-grid">
+            <div class="mode-item" onclick="startMode('tebakgambar')"><i class="fas fa-image"></i> GAMBAR</div>
+            <div class="mode-item" onclick="startMode('tebakkata')"><i class="fas fa-font"></i> KATA</div>
+            <div class="mode-item" onclick="startMode('tebakkalimat')"><i class="fas fa-quote-left"></i> KALIMAT</div>
+            <div class="mode-item" onclick="startMode('caklontong')"><i class="fas fa-laugh"></i> LONTONG</div>
+            <div class="mode-item" onclick="changeScreen('scr-tiktok')"><i class="fab fa-tiktok"></i> TIKTOK</div>
+            <div class="mode-item" onclick="claimDaily()"><i class="fas fa-calendar-check"></i> HARIAN</div>
+        </div>
+    </div>
+</section>
+
+<section id="scr-game" class="screen">
+    <div class="crystal-card">
+        <div id="q-img-wrap" style="display:none;"><img id="q-img" style="width:100%; border-radius:15px; margin-bottom:15px;"></div>
+        <h3 id="q-text" style="margin-bottom:20px;">...</h3>
+        <input type="text" id="ans-input" class="input-elite" placeholder="Ketik Jawaban...">
+        <button class="btn-elite" onclick="submitAns()">JAWAB</button>
+        <button class="btn-elite btn-surrender" onclick="goHome()">KEMBALI</button>
+    </div>
+</section>
+
+<section id="scr-tiktok" class="screen">
+    <div class="crystal-card">
+        <h2>TIKTOK DL</h2>
+        <input type="text" id="tt-url" class="input-elite" placeholder="Paste Link Video...">
+        <button class="btn-elite" onclick="downloadTT()">UNDUH</button>
+        <div id="tt-result" style="margin-top:15px; display:none;">
+            <video id="tt-preview" controls style="width:100%; border-radius:10px;"></video>
+        </div>
+        <button class="btn-elite btn-surrender" onclick="goHome()">BACK</button>
+    </div>
+</section>
+
+<div id="chat-widget">
+    <div class="chat-box" id="chat-box">
+        <div style="background:var(--text); color:white; padding:10px; font-size:0.7rem; text-align:center;">DITZ AI V10</div>
+        <div id="chat-content" style="flex:1; padding:10px; overflow-y:auto; font-size:0.8rem;"></div>
+        <div style="padding:10px; border-top:1px solid #eee; display:flex; gap:5px;">
+            <input type="text" id="chat-input" style="flex:1; padding:8px; border-radius:10px; border:1px solid #ddd;">
+            <button onclick="sendChat()" style="background:var(--p); color:white; border:none; padding:8px; border-radius:10px;"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+    <div class="chat-btn" onclick="toggleChat()"><i class="fas fa-robot"></i></div>
+</div>
+
+<audio id="bgm" loop src="https://files.catbox.moe/new96s.mp3"></audio>
+
+<script>
+    const API_KEY = "AIzaSyA5fj3TWMNt2TwyUteye9b39cK2VFc48hA";
+    let user = JSON.parse(localStorage.getItem('ditz_v10')) || { name: '', id: '', pts: 100 };
+    let game = { answer: '', mode: '' };
+
+    // FIX GITHUB PAGES: Mulai app hanya setelah interaksi user
+    function initApp() {
+        try {
+            document.getElementById('bgm').play().catch(e => console.log("Audio play blocked"));
+        } catch(e){}
+
+        if(user.name) {
+            changeScreen('scr-dash');
+            updateUI();
+        } else {
+            changeScreen('scr-reg');
+        }
+    }
+
+    function changeScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        const target = document.getElementById(id);
+        if(target) target.classList.add('active');
+        document.getElementById('dropdown').style.display = 'none';
+    }
+
+    function saveUser() {
+        const n = document.getElementById('reg-name').value.trim();
+        if(!n) return alert("Isi nama!");
+        user.name = n;
+        user.id = "#" + Math.floor(Math.random()*900000);
+        localStorage.setItem('ditz_v10', JSON.stringify(user));
+        updateUI();
+        changeScreen('scr-dash');
+    }
+
+    function updateUI() {
+        document.getElementById('user-pts').innerText = user.pts;
+        document.getElementById('nav-pts').style.display = 'flex';
+        document.getElementById('dd-name').innerText = user.name;
+        document.getElementById('dd-id').innerText = user.id;
+        document.getElementById('dash-welcome').innerText = "Halo, " + user.name + "!";
+    }
+
+    function toggleMenu() {
+        const m = document.getElementById('dropdown');
+        m.style.display = (m.style.display === 'flex' ? 'none' : 'flex');
+    }
+
+    function goHome() { changeScreen('scr-dash'); }
+
+    // GAME
+    async function startMode(m) {
+        game.mode = m;
+        document.getElementById('q-text').innerText = "Loading Data...";
+        document.getElementById('q-img-wrap').style.display = 'none';
+        changeScreen('scr-game');
+
+        try {
+            const resp = await fetch(`https://raw.githubusercontent.com/BochilTeam/database/master/games/${m}.json`);
+            const data = await resp.json();
+            const item = data[Math.floor(Math.random()*data.length)];
+            
+            game.answer = (item.jawaban || item.jawaban_benar || "").toLowerCase();
+            document.getElementById('q-text').innerText = item.soal || item.deskripsi || "Tebak gambarnya!";
+            if(item.img) {
+                document.getElementById('q-img').src = item.img;
+                document.getElementById('q-img-wrap').style.display = 'block';
+            }
+        } catch(e) { alert("Error database!"); goHome(); }
+    }
+
+    function submitAns() {
+        const v = document.getElementById('ans-input').value.toLowerCase().trim();
+        if(v === game.answer) {
+            user.pts += 20;
+            alert("BENAR! +20 Poin");
+            localStorage.setItem('ditz_v10', JSON.stringify(user));
+            updateUI();
+            startMode(game.mode);
+        } else {
+            alert("SALAH! Coba lagi.");
+        }
+        document.getElementById('ans-input').value = '';
+    }
+
+    // TIKTOK DL
+    async function downloadTT() {
+        const url = document.getElementById('tt-url').value;
+        if(!url) return;
+        const btn = event.target;
+        btn.innerText = "WAIT...";
+        
+        try {
+            const resp = await fetch('https://www.tikwm.com/api/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({ url: url, web: '1' })
+            });
+            const res = await resp.json();
+            if(res.data) {
+                document.getElementById('tt-result').style.display = 'block';
+                document.getElementById('tt-preview').src = "https://www.tikwm.com" + res.data.play;
+            }
+        } catch(e) { alert("Gagal!"); }
+        btn.innerText = "UNDUH";
+    }
+
+    // AI CHAT
+    async function sendChat() {
+        const i = document.getElementById('chat-input');
+        const c = document.getElementById('chat-content');
+        if(!i.value) return;
+        
+        const txt = i.value;
+        c.innerHTML += `<div style="text-align:right; margin:5px; color:var(--p);"><b>Me:</b> ${txt}</div>`;
+        i.value = '';
+
+        try {
+            const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ contents: [{ parts: [{ text: txt }] }] })
+            });
+            const d = await resp.json();
+            const reply = d.candidates[0].content.parts[0].text;
+            c.innerHTML += `<div style="text-align:left; margin:5px; background:#f1f5f9; padding:8px; border-radius:10px;"><b>AI:</b> ${reply}</div>`;
+        } catch(e) { c.innerHTML += `<div>Error...</div>`; }
+        c.scrollTop = c.scrollHeight;
+    }
+
+    function toggleChat() {
+        const b = document.getElementById('chat-box');
+        b.style.display = (b.style.display === 'flex' ? 'none' : 'flex');
+    }
+
+    function claimDaily() {
+        user.pts += 50;
+        alert("Bonus harian +50 Poin!");
+        localStorage.setItem('ditz_v10', JSON.stringify(user));
+        updateUI();
+    }
+
+    setInterval(() => {
+        document.getElementById('clock').innerText = new Date().toLocaleTimeString('id-ID');
+    }, 1000);
+
+    function openShop() { alert("Hubungi Owner: 085279887435"); }
+</script>
+</body>
+  </html>
