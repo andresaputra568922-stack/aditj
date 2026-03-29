@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premier Academy V10 - Eternal God</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --p: #0ea5e9; --s: #8b5cf6; --bg: #f8fafc;
+            --white: #ffffff; --text: #0f172a;
+            --glass: rgba(255, 255, 255, 0.95);
+            --border: rgba(14, 165, 233, 0.2);
+            --shadow: 0 20px 50px rgba(14, 165, 233, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+
+        nav {
+            padding: 15px 5%; display: flex; justify-content: space-between; align-items: center;
+            background: var(--glass); backdrop-filter: blur(20px);
+            position: sticky; top: 0; z-index: 1000; border-bottom: 2px solid var(--border);
+        }
+        .clock-v10 { background: var(--p); color: white; padding: 8px 18px; border-radius: 12px; font-weight: 800; font-size: 0.8rem; }
+
+        .pts-pill { display: flex; align-items: center; gap: 8px; background: #fef9c3; padding: 6px 15px; border-radius: 15px; border: 1px solid #fde047; }
+        .pts-val { color: #854d0e; font-weight: 800; font-size: 0.9rem; }
+        .btn-plus { background: var(--p); color: white; width: 22px; height: 22px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+
+        .menu-container { position: relative; }
+        .dropdown {
+            position: absolute; right: 0; top: 50px; background: white; 
+            width: 260px; border-radius: 25px; box-shadow: var(--shadow);
+            display: none; flex-direction: column; overflow: hidden; border: 1px solid var(--border); z-index: 2001;
+        }
+        .user-header { padding: 20px; background: #f8fafc; text-align: center; border-bottom: 1px solid #eee; }
+        .user-avatar { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 3px solid var(--p); margin-bottom: 10px; cursor: pointer; }
+        .dropdown .item { padding: 15px 20px; font-weight: 700; border-bottom: 1px solid #f1f5f9; cursor: pointer; display: flex; align-items: center; gap: 12px; font-size: 0.85rem; }
+        .dropdown .item:hover { background: #f0f9ff; color: var(--p); }
+
+        .screen { display: none; padding: 30px 5%; flex-direction: column; align-items: center; min-height: 85vh; animation: slideUp 0.4s ease; }
+        .active { display: flex; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        .crystal-card { background: var(--white); border: 1px solid var(--border); border-radius: 35px; padding: 30px; width: 100%; max-width: 500px; text-align: center; box-shadow: var(--shadow); }
+        .btn-elite { width: 100%; padding: 18px; border-radius: 20px; border: none; margin-top: 15px; background: linear-gradient(135deg, var(--p), var(--s)); color: white; font-weight: 800; cursor: pointer; transition: 0.3s; }
+        .btn-surrender { background: #fee2e2; color: #ef4444; margin-top: 10px; }
+
+        .input-elite { width: 100%; padding: 18px; border-radius: 18px; border: 2px solid #e2e8f0; background: #f8fafc; text-align: center; margin-bottom: 15px; outline: none; font-size: 1.1rem; font-weight: 700; }
+
+        .mode-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; margin-top: 20px; }
+        .mode-item { background: white; padding: 18px; border-radius: 25px; border: 1.5px solid #e2e8f0; cursor: pointer; transition: 0.3s; font-weight: 800; font-size: 0.7rem; }
+        .mode-item:hover { border-color: var(--p); background: #f0f9ff; }
+        .mode-item i { display: block; font-size: 1.8rem; margin-bottom: 8px; color: var(--p); }
+
+        .timer-wrap { width: 100%; height: 8px; background: #e2e8f0; border-radius: 10px; margin-bottom: 25px; overflow: hidden; display: none; }
+        #timer-bar { width: 100%; height: 100%; background: var(--p); transition: width 0.1s linear; }
+
+        #chat-widget { position: fixed; bottom: 25px; right: 25px; z-index: 2000; }
+        .chat-btn { width: 65px; height: 65px; background: var(--text); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 10px 30px rgba(0,0,0,0.3); font-size: 1.8rem; }
+        .chat-box { position: absolute; bottom: 85px; right: 0; width: 310px; height: 430px; background: white; border-radius: 30px; box-shadow: var(--shadow); display: none; flex-direction: column; overflow: hidden; border: 1px solid var(--border); }
+        .chat-header { background: var(--text); color: white; padding: 15px; font-weight: 800; text-align: center; font-size: 0.8rem; }
+        #chat-content { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; font-size: 0.8rem; text-align: left; }
+        .msg { padding: 10px 14px; border-radius: 15px; max-width: 85%; font-weight: 600; }
+        .msg.ai { background: #f1f5f9; align-self: flex-start; }
+        .msg.user { background: var(--p); color: white; align-self: flex-end; }
+
+        footer { margin-top: auto; padding: 20px; text-align: center; font-size: 0.75rem; font-weight: 800; color: var(--p); opacity: 0.6; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="clock-v10" id="clock">00:00:00</div>
+    <div style="display:flex; gap:12px; align-items:center;">
+        <div id="nav-pts" class="pts-pill" style="display:none;">
+            <span class="pts-val"><span id="user-pts">0</span> <i class="fas fa-coins" style="color:#eab308;"></i></span>
+            <div class="btn-plus" onclick="openShop()"><i class="fas fa-plus"></i></div>
+        </div>
+        <div class="menu-container">
+            <i class="fas fa-ellipsis-v" onclick="toggleMenu()" style="cursor:pointer; color:var(--p); font-size:1.5rem; padding: 5px;"></i>
+            <div class="dropdown" id="dropdown">
+                <div class="user-header">
+                    <img id="side-pp" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" class="user-avatar" onclick="document.getElementById('pp-input').click()">
+                    <div id="dd-name" style="font-weight:800; font-size:1rem;">Guest</div>
+                    <div id="dd-id" style="font-size:0.75rem; color:#64748b;">#000000</div>
+                </div>
+                <div class="item" onclick="goHome()"><i class="fas fa-home"></i> Dashboard</div>
+                <div class="item" onclick="changeScreen('scr-tiktok')"><i class="fab fa-tiktok"></i> TikTok Downloader</div>
+                <div class="item" onclick="openShop()"><i class="fas fa-shopping-cart"></i> Toko Poin</div>
+                <div class="item" onclick="window.open('https://wa.me/6285279887435')"><i class="fab fa-whatsapp"></i> Chat Owner</div>
+                <input type="file" id="pp-input" hidden accept="image/*" onchange="processPP(event)">
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Screen: Welcome -->
+<section id="scr-welcome" class="screen active">
+    <div class="crystal-card">
+        <h1 style="font-size: 2.8rem; line-height:1; color:var(--p);">PREMIER<br><span style="color:var(--text); font-weight:300;">ACADEMY V10</span></h1>
+        <p style="margin:20px 0; color:#64748b; font-weight:600;">Edisi Eternal God by <b>Ditzya</b></p>
+        <button class="btn-elite" onclick="initApp()">MASUK SEKARANG</button>
+    </div>
+</section>
+
+<!-- Screen: Register -->
+<section id="scr-reg" class="screen">
+    <div class="crystal-card">
+        <h2>PENDAFTARAN</h2>
+        <p style="margin-bottom:25px; font-size:0.9rem; color:#64748b;">Masukkan nama Anda untuk sistem.</p>
+        <input type="text" id="reg-name" class="input-elite" placeholder="Nama Panggilan">
+        <button class="btn-elite" onclick="saveUser()">DAFTAR AKUN</button>
+    </div>
+</section>
+
+<!-- Screen: Dashboard -->
+<section id="scr-dash" class="screen">
+    <div class="crystal-card">
+        <h3 id="dash-welcome">Halo!</h3>
+        <p style="font-size:0.7rem; font-weight:800; color:var(--p); letter-spacing:2px; margin-bottom:20px;">RANK: PELAJAR DEWA</p>
+        <div class="mode-grid">
+            <div class="mode-item" onclick="startMode('tebakgambar')"><i class="fas fa-image"></i> GAMBAR</div>
+            <div class="mode-item" onclick="startMode('tebakkata')"><i class="fas fa-font"></i> KATA</div>
+            <div class="mode-item" onclick="startMode('tebakkalimat')"><i class="fas fa-quote-left"></i> KALIMAT</div>
+            <div class="mode-item" onclick="startMode('tebaklirik')"><i class="fas fa-music"></i> LIRIK</div>
+            <div class="mode-item" onclick="startMode('caklontong')"><i class="fas fa-laugh-wink"></i> LONTONG</div>
+            <div class="mode-item" onclick="startMode('family100')"><i class="fas fa-users"></i> FAMILY 100</div>
+            <div class="mode-item" onclick="changeScreen('scr-tiktok')"><i class="fab fa-tiktok"></i> TIKTOK DL</div>
+            <div class="mode-item" onclick="playSuitInit()"><i class="fas fa-hand-rock"></i> SUIT BET</div>
+        </div>
+        <button class="btn-elite" onclick="claimDaily()" style="margin-top:20px; background:white; color:var(--p); border:2px solid var(--p);">KLAIM HARIAN (+100)</button>
+    </div>
+</section>
+
+<!-- Screen: Game -->
+<section id="scr-game" class="screen">
+    <div class="crystal-card">
+        <div class="timer-wrap" id="timer-ui"><div id="timer-bar"></div></div>
+        <div id="game-ui">
+            <div id="q-img-wrap" style="display:none; margin-bottom:15px;">
+                <img id="q-img" style="width:100%; border-radius:20px; border:2px solid #eee;">
+            </div>
+            <h3 id="q-text" style="font-size:1.4rem; line-height:1.4; margin-bottom:20px;">...</h3>
+            <div id="f100-wrap" style="display:none; text-align:left; margin-bottom:15px; font-size:0.8rem; background:#f8fafc; padding:15px; border-radius:15px;"></div>
+            <input type="text" id="ans-input" class="input-elite" placeholder="Jawaban...">
+            <button class="btn-elite" onclick="submitAns()">SUBMIT</button>
+            <button class="btn-elite btn-surrender" onclick="surrender()">MENYERAH (-20)</button>
+        </div>
+    </div>
+</section>
+
+<!-- Screen: TikTok Downloader -->
+<section id="scr-tiktok" class="screen">
+    <div class="crystal-card">
+        <i class="fab fa-tiktok" style="font-size:3rem; color:black; margin-bottom:15px;"></i>
+        <h2>TIKTOK DOWNLOADER</h2>
+        <input type="text" id="tt-url" class="input-elite" placeholder="https://tiktok.com/...">
+        <button class="btn-elite" id="btn-dl-tt" onclick="downloadTT()">UNDUH VIDEO</button>
+        <div id="tt-result" style="margin-top:20px; display:none; text-align:left;">
+            <p id="tt-title" style="font-weight:800; font-size:0.8rem;"></p>
+            <video id="tt-preview" controls style="width:100%; border-radius:15px; background:black;"></video>
+        </div>
+        <button class="btn-elite btn-surrender" onclick="goHome()">KEMBALI</button>
+    </div>
+</section>
+
+<!-- Screen: Shop -->
+<section id="scr-shop" class="screen">
+    <div class="crystal-card">
+        <h2 style="color:var(--p); margin-bottom:20px;">TOKO POIN</h2>
+        <div style="background:#f8fafc; padding:20px; border-radius:20px; margin-bottom:15px; display:flex; justify-content:space-between; align-items:center; border:1px solid #eee; cursor:pointer;" onclick="buyPoin('16.000', '1.000')">
+            <div><b>PAKET STARTER</b><br><small>1.000 Poin</small></div>
+            <b style="color:var(--p);">Rp 16.000</b>
+        </div>
+        <button class="btn-elite" onclick="changeScreen('scr-dash')" style="background:#eee; color:#64748b;">KEMBALI</button>
+    </div>
+</section>
+
+<!-- DitzAI Chat -->
+<div id="chat-widget">
+    <div class="chat-box" id="chat-box">
+        <div class="chat-header">DITZ-AI V10 (2.0 FLASH)</div>
+        <div id="chat-content"></div>
+        <div style="padding:10px; display:flex; gap:8px; border-top:1px solid #eee;">
+            <input type="text" id="chat-input" style="flex:1; padding:10px; border-radius:12px; border:1px solid #ddd; outline:none;" placeholder="Tanya DitzAI...">
+            <button onclick="sendChat()" style="background:var(--p); color:white; border:none; width:45px; border-radius:12px;"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+    <div class="chat-btn" onclick="toggleChat()"><i class="fas fa-robot"></i></div>
+</div>
+
+<audio id="bgm" loop src="https://files.catbox.moe/new96s.mp3"></audio>
+<audio id="sfx-ok" src="https://www.soundjay.com/buttons/sounds/button-37a.mp3"></audio>
+<audio id="sfx-no" src="https://www.myinstants.com/media/sounds/tetot.mp3"></audio>
+
+<footer>OWNER: DITZYA • 085279887435</footer>
+
+<script>
+    // --- API & MODEL ---
+    const API_KEY = "AIzaSyA5fj3TWMNt2TwyUteye9b39cK2VFc48hA";
+    const MODEL = "gemini-1.5-flash"; // Tetap pakai model ini agar lebih stabil
+
+    let user = JSON.parse(localStorage.getItem('ditz_god_v10')) || { name: '', id: '', pts: 100, exp: 0, lastDaily: '', pp: '' };
+    let game = { mode: '', answer: '', isDone: false, timer: null, f100: null, desk: '' };
+
+    // --- SYSTEM CORE ---
+    function initApp() {
+        try {
+            const bgm = document.getElementById('bgm');
+            bgm.volume = 0.4;
+            bgm.play().catch(e => console.log("Audio play blocked by browser"));
+            
+            if(user.name) {
+                changeScreen('scr-dash');
+                updateUI();
+            } else {
+                changeScreen('scr-reg');
+            }
+        } catch (err) {
+            console.error(err);
+            changeScreen('scr-reg');
+        }
+    }
+
+    function saveUser() {
+        const n = document.getElementById('reg-name').value.trim();
+        if(!n) return alert("Isi nama kamu!");
+        user.name = n;
+        user.id = "#" + Math.floor(100000 + Math.random() * 900000);
+        save();
+        updateUI();
+        changeScreen('scr-dash');
+    }
+
+    function checkLogin() {
+        if(!user.name) {
+            changeScreen('scr-reg');
+            return false;
+        }
+        return true;
+    }
+
+    // --- NAVIGATION ---
+    function changeScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        const target = document.getElementById(id);
+        if(target) target.classList.add('active');
+        window.scrollTo(0,0);
+    }
+
+    function toggleMenu() {
+        if(!checkLogin()) return;
+        const m = document.getElementById('dropdown');
+        m.style.display = (m.style.display === 'flex' ? 'none' : 'flex');
+    }
+
+    function goHome() {
+        changeScreen('scr-dash');
+        document.getElementById('dropdown').style.display = 'none';
+    }
+
+    // --- GAME ENGINE ---
+    function startMode(m) {
+        if(!checkLogin()) return;
+        game.mode = m;
+        launchGame();
+    }
+
+    async function launchGame() {
+        game.isDone = false;
+        resetGameUI();
+        const url = `https://raw.githubusercontent.com/BochilTeam/database/master/games/${game.mode}.json`;
+        
+        try {
+            const resp = await fetch(url);
+            if(!resp.ok) throw new Error("Gagal ambil database");
+            const data = await resp.json();
+            const item = data[Math.floor(Math.random() * data.length)];
+
+            if(game.mode === 'tebakgambar') {
+                document.getElementById('q-img-wrap').style.display = 'block';
+                document.getElementById('q-img').src = item.img;
+                document.getElementById('q-text').innerText = item.deskripsi;
+            } else if(game.mode === 'family100') {
+                document.getElementById('f100-wrap').style.display = 'block';
+                game.f100 = { j: item.jawaban, t: Array(item.jawaban.length).fill(false) };
+                document.getElementById('q-text').innerText = item.soal;
+                renderF100();
+            } else {
+                document.getElementById('q-text').innerText = item.soal || item.lirik || item.pertanyaan;
+            }
+
+            game.answer = (item.jawaban || item.negara || "").toString().toLowerCase();
+            game.desk = item.deskripsi || "";
+            startTimer(30000); 
+            changeScreen('scr-game');
+
+        } catch(e) {
+            console.error(e);
+            alert("Database Error! Mencoba lagi...");
+            goHome();
+        }
+    }
+
+    function submitAns() {
+        if(game.isDone) return;
+        const val = document.getElementById('ans-input').value.toLowerCase().trim();
+        if(!val) return;
+
+        if(game.mode === 'family100') {
+            let idx = game.f100.j.findIndex(ans => ans.toLowerCase() === val);
+            if(idx !== -1 && !game.f100.t[idx]) {
+                game.f100.t[idx] = true;
+                playSFX('ok');
+                renderF100();
+                if(game.f100.t.every(v => v)) finishRound(true);
+            } else playSFX('no');
+        } else {
+            if(val === game.answer) finishRound(true);
+            else finishRound(false);
+        }
+        document.getElementById('ans-input').value = '';
+    }
+
+    function finishRound(win) {
+        game.isDone = true;
+        clearInterval(game.timer);
+        if(win) {
+            playSFX('ok');
+            user.pts += 50;
+            alert("BENAR! +50 Poin.");
+        } else {
+            playSFX('no');
+            user.pts = Math.max(0, user.pts - 10);
+            alert("SALAH/WAKTU HABIS! Jawabannya: " + game.answer);
+        }
+        save();
+        updateUI();
+        launchGame();
+    }
+
+    function surrender() {
+        finishRound(false);
+    }
+
+    function startTimer(ms) {
+        const bar = document.getElementById('timer-bar');
+        const ui = document.getElementById('timer-ui');
+        ui.style.display = 'block';
+        bar.style.width = '100%';
+        let start = Date.now();
+        game.timer = setInterval(() => {
+            let passed = Date.now() - start;
+            let remain = Math.max(0, 100 - (passed/ms*100));
+            bar.style.width = remain + '%';
+            if(remain <= 0) finishRound(false);
+        }, 100);
+    }
+
+    // --- TIKTOK DOWNLODER ---
+    async function downloadTT() {
+        const url = document.getElementById('tt-url').value;
+        if(!url) return alert("Link TikTok mana?");
+        
+        const btn = document.getElementById('btn-dl-tt');
+        btn.innerText = "SABAR...";
+        btn.disabled = true;
+
+        try {
+            const params = new URLSearchParams();
+            params.append('url', url);
+            params.append('web', '1');
+
+            const resp = await fetch('https://www.tikwm.com/api/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: params
+            });
+
+            const res = await resp.json();
+            const data = res.data;
+
+            if(!data) throw new Error("Gagal ambil video");
+
+            document.getElementById('tt-result').style.display = 'block';
+            document.getElementById('tt-title').innerText = data.title;
+            document.getElementById('tt-preview').src = "https://www.tikwm.com" + data.play;
+            alert("Video Ditemukan!");
+
+        } catch (e) {
+            alert("Gagal: " + e.message);
+        } finally {
+            btn.innerText = "UNDUH VIDEO";
+            btn.disabled = false;
+        }
+    }
+
+    // --- CHAT DITZYA ---
+    async function sendChat() {
+        const i = document.getElementById('chat-input');
+        const t = i.value.trim();
+  
